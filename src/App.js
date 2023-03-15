@@ -1,25 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import { lazy, Suspense, useEffect, useState } from "react";
+import { Route, Routes } from "react-router-dom";
+import "./App.scss";
+import "swiper/scss";
+import {Loading} from "./components/Loading";
+const Socials = lazy(() => import("./components/Socials"));
+const Header = lazy(() => import("./components/Header"));
+const Footer = lazy(() => import("./components/Footer"));
+const Home = lazy(() => import("./screens/Home"));
+const Archive = lazy(() => import("./screens/Archive"));
 
-function App() {
+export default function App() {
+  const [showFooter, setShowFooter] = useState(false);
+  useEffect(() => {
+    if (window.location.pathname === "/") {
+      setShowFooter(true);
+    } else {
+      setShowFooter(false);
+    }
+  }, [window.location.pathname]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Suspense fallback={<Loading />}>
+      <div className="App">
+        <Socials />
+        <Header />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/archive" element={<Archive />} />
+        </Routes>
+      </div>
+      {showFooter ? <Footer /> : null}
+    </Suspense>
   );
 }
-
-export default App;
